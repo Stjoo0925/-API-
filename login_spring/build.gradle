@@ -1,0 +1,64 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.2'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.stjoo0925'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Boot JPA Starter for database interaction
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // Spring Boot OAuth2 Client for social login
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // Spring Boot Security for authentication and authorization
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Spring Boot Web Starter for building web applications, including RESTful services
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Lombok for reducing boilerplate code (e.g., getters, setters)
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // MySQL Connector for connecting to MySQL databases
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // JWT (JSON Web Token) for token-based authentication
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // or jjwt-gson, jjwt-orgjson
+
+    // Spring Boot Test Starter for testing Spring Boot applications
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Spring Security Test utilities
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    // JUnit Platform Launcher for launching tests
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
