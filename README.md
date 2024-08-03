@@ -1,4 +1,4 @@
-# -API-
+# Social Login Test
 소셜로그인 API 테스트
 
 👉 [구글](https://cloud.google.com/identity-platform/docs/web/google?hl=ko) <br><br>
