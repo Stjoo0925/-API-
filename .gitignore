@@ -564,4 +564,6 @@ $RECYCLE.BIN/
 node_modules
 .package-lock.json
 
+application.yml
+
 # End of https://www.toptal.com/developers/gitignore/api/intellij,vs,windows,macos,vuejs,java

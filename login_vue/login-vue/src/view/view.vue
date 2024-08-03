@@ -1,4 +1,44 @@
-<script setup></script>
+<script setup>
+import { useAPIStore } from "@/stores/store";
+
+const apiStore = useAPIStore();
+
+const handleGoogleLogin = async () => {
+  await apiStore.loginWithGoogle();
+  if (apiStore.googleAuth) {
+    console.log("Google 로그인 성공:", apiStore.googleAuth);
+  } else {
+    console.log("Google 로그인 실패:", apiStore.error);
+  }
+};
+
+const handleGithubLogin = async () => {
+  await apiStore.loginWithGithub();
+  if (apiStore.githubAuth) {
+    console.log("GitHub 로그인 성공:", apiStore.githubAuth);
+  } else {
+    console.log("GitHub 로그인 실패:", apiStore.error);
+  }
+};
+
+const handleKakaoLogin = async () => {
+  await apiStore.loginWithKakao();
+  if (apiStore.kakaoAuth) {
+    console.log("Kakao 로그인 성공:", apiStore.kakaoAuth);
+  } else {
+    console.log("Kakao 로그인 실패:", apiStore.error);
+  }
+};
+
+const handleNaverLogin = async () => {
+  await apiStore.loginWithNaver();
+  if (apiStore.naverAuth) {
+    console.log("Naver 로그인 성공:", apiStore.naverAuth);
+  } else {
+    console.log("Naver 로그인 실패:", apiStore.error);
+  }
+};
+</script>
 
 <template>
   <div
@@ -15,7 +55,7 @@
           <img
             src="@/assets/images/google-login.png"
             class="w-40"
-            @click="loginToGoogle"
+            @click="handleGoogleLogin"
           />
         </div>
       </div>
@@ -25,7 +65,7 @@
           <img
             src="@/assets/images/github-login.png"
             class="w-40"
-            @click="loginToGithub"
+            @click="handleGithubLogin"
           />
         </div>
       </div>
@@ -35,7 +75,7 @@
           <img
             src="@/assets/images/kakao-login.png"
             class="w-40"
-            @click="loginToKakao"
+            @click="handleKakaoLogin"
           />
         </div>
       </div>
@@ -45,7 +85,7 @@
           <img
             src="@/assets/images/naver-login.png"
             class="w-40"
-            @click="loginToNaver"
+            @click="handleNaverLogin"
           />
         </div>
       </div>
