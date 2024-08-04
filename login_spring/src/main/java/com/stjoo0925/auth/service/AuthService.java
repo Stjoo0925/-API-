@@ -1,5 +1,8 @@
 package com.stjoo0925.auth.service;
 
+import com.stjoo0925.auth.model.AuthDetails;
+import com.stjoo0925.user.model.entity.User;
+import com.stjoo0925.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

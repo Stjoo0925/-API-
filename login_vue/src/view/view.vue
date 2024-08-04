@@ -1,41 +1,39 @@
 <script setup>
-import { useAPIStore } from "@/stores/store";
+import axios from "@/axios";
 
-const apiStore = useAPIStore();
-
-const handleGoogleLogin = async () => {
-  await apiStore.loginWithGoogle();
-  if (apiStore.googleAuth) {
-    console.log("Google 로그인 성공:", apiStore.googleAuth);
-  } else {
-    console.log("Google 로그인 실패:", apiStore.error);
+const loginWithGoogle = async () => {
+  try {
+    const response = await axios.post("/login/google");
+    console.log("Google 로그인 성공:", response.data);
+  } catch (error) {
+    console.error("Google 로그인 실패:", error);
   }
 };
 
-const handleGithubLogin = async () => {
-  await apiStore.loginWithGithub();
-  if (apiStore.githubAuth) {
-    console.log("GitHub 로그인 성공:", apiStore.githubAuth);
-  } else {
-    console.log("GitHub 로그인 실패:", apiStore.error);
+const loginWithGithub = async () => {
+  try {
+    const response = await axios.post("/login/github");
+    console.log("GitHub 로그인 성공:", response.data);
+  } catch (error) {
+    console.error("GitHub 로그인 실패:", error);
   }
 };
 
-const handleKakaoLogin = async () => {
-  await apiStore.loginWithKakao();
-  if (apiStore.kakaoAuth) {
-    console.log("Kakao 로그인 성공:", apiStore.kakaoAuth);
-  } else {
-    console.log("Kakao 로그인 실패:", apiStore.error);
+const loginWithKakao = async () => {
+  try {
+    const response = await axios.post("/login/kakao");
+    console.log("Kakao 로그인 성공:", response.data);
+  } catch (error) {
+    console.error("Kakao 로그인 실패:", error);
   }
 };
 
-const handleNaverLogin = async () => {
-  await apiStore.loginWithNaver();
-  if (apiStore.naverAuth) {
-    console.log("Naver 로그인 성공:", apiStore.naverAuth);
-  } else {
-    console.log("Naver 로그인 실패:", apiStore.error);
+const loginWithNaver = async () => {
+  try {
+    const response = await axios.post("/login/naver");
+    console.log("Naver 로그인 성공:", response.data);
+  } catch (error) {
+    console.error("Naver 로그인 실패:", error);
   }
 };
 </script>
@@ -55,7 +53,7 @@ const handleNaverLogin = async () => {
           <img
             src="@/assets/images/google-login.png"
             class="w-40"
-            @click="handleGoogleLogin"
+            @click="loginWithGoogle"
           />
         </div>
       </div>
@@ -65,7 +63,7 @@ const handleNaverLogin = async () => {
           <img
             src="@/assets/images/github-login.png"
             class="w-40"
-            @click="handleGithubLogin"
+            @click="loginWithGithub"
           />
         </div>
       </div>
@@ -75,7 +73,7 @@ const handleNaverLogin = async () => {
           <img
             src="@/assets/images/kakao-login.png"
             class="w-40"
-            @click="handleKakaoLogin"
+            @click="loginWithKakao"
           />
         </div>
       </div>
@@ -85,7 +83,7 @@ const handleNaverLogin = async () => {
           <img
             src="@/assets/images/naver-login.png"
             class="w-40"
-            @click="handleNaverLogin"
+            @click="loginWithNaver"
           />
         </div>
       </div>

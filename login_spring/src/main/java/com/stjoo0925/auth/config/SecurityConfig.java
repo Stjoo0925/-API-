@@ -1,71 +1,58 @@
 package com.stjoo0925.auth.config;
 
-import com.stjoo0925.auth.config.handler.AuthFailHandler;
-import com.stjoo0925.user.model.dto.UserRole;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final AuthFailHandler failHandler;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserDetailsService userDetailsService;
 
-    @Autowired
-    public SecurityConfig(AuthFailHandler failHandler) {
-        this.failHandler = failHandler;
-    }
-
-    /**
-     * 비밀번호를 인코딩 하기 위한 bean
-     * Bcrypt는 비밀번호 해싱에 가장 많이 사용되는 알고리즘 중 하나이다.
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public SecurityConfig(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService) {
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userDetailsService = userDetailsService;
     }
 
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-    }
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .cors(withDefaults()) // CORS 설정을 기본으로 활성화
+                .csrf(csrf -> csrf.disable()) // JWT를 사용할 경우 CSRF 비활성화
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll() // 모든 요청에 대해 접근 허용
+                )
+                .addFilter(new JwtAuthenticationFilter(jwtTokenProvider, authenticationManager(http))) // JWT 인증 필터 추가
+                .addFilter(new JwtAuthorizationFilter(jwtTokenProvider, userDetailsService)); // JWT 인가 필터 추가
 
-    @Bean
-    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> {
-            auth.requestMatchers("/auth/login","/user/signup","/auth/fail","/").permitAll();
-            auth.requestMatchers("/admin/*").hasAnyAuthority(UserRole.ADMIN.getRole());
-            auth.requestMatchers("/user/*").hasAnyAuthority(UserRole.USER.getRole());
-            auth.requestMatchers("/admin/*","/user/*").hasAnyAuthority(UserRole.ALL.getRole());
-            auth.anyRequest().authenticated();
-        }).formLogin(login -> {
-            login.loginPage("/auth/login");
-            login.usernameParameter("user");
-            login.passwordParameter("pass");
-            login.defaultSuccessUrl("/", true);
-            login.failureHandler(failHandler);
-        }).logout(logout -> {
-            logout.logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout"));
-            logout.deleteCookies("JSESSIONID");
-            logout.invalidateHttpSession(true);
-            logout.logoutSuccessUrl("/");
-        }).sessionManagement(session -> {
-            session.maximumSessions(1);
-            session.invalidSessionUrl("/");
-            session.sessionFixation();
-        }).csrf(csrf -> csrf.disable());
         return http.build();
     }
 
-}
+    private AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class).build();
+    }
 
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("http://localhost:8001"); // 허용할 출처
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+}
